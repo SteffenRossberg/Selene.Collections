@@ -21,18 +21,7 @@ namespace Selene.Collections
             Count = index + 1;
         }
 
-        public void Clear()
-        {
-            _data = new T[_data.Length];
-            Count = 0;
-        }
-
-        public bool Contains(T item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
+        public void Insert(int index, T item)
         {
             throw new System.NotImplementedException();
         }
@@ -50,9 +39,28 @@ namespace Selene.Collections
             return false;
         }
 
-        public IEnumerator<T> GetEnumerator() => Enumerate().GetEnumerator();
+        public void RemoveAt(int index)
+        {
+            var count = Count;
+            var newData = new T[_data.Length];
+            if(index > 0)
+                Array.Copy(_data, newData, index);
+            if (count - index > 1)
+                Array.Copy(_data, index + 1, newData, index, count - index - 1);
+            _data = newData;
+            Count = count - 1;
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public void Clear()
+        {
+            _data = new T[_data.Length];
+            Count = 0;
+        }
+
+        public bool Contains(T item)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public int IndexOf(T item)
         {
@@ -69,22 +77,14 @@ namespace Selene.Collections
             return -1;
         }
 
-        public void Insert(int index, T item)
+        public void CopyTo(T[] array, int arrayIndex)
         {
             throw new System.NotImplementedException();
         }
 
-        public void RemoveAt(int index)
-        {
-            var count = Count;
-            var newData = new T[_data.Length];
-            if(index > 0)
-                Array.Copy(_data, newData, index);
-            if (count - index > 1)
-                Array.Copy(_data, index + 1, newData, index, count - index - 1);
-            _data = newData;
-            Count = count - 1;
-        }
+        public IEnumerator<T> GetEnumerator() => Enumerate().GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         private IEnumerable<T> Enumerate()
         {
