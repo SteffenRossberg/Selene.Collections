@@ -8,26 +8,13 @@ namespace Selene.Collections
 {
     public class ReferenceList<T> : IReferenceList<T>
     {
-        public ref T this[int index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get => ref _data[index];
-        }
+        public ref T this[int index] => ref _data[index];
 
         private int _count = 0;
-        public int Count
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get => _count; 
-        }
-        
-        public bool IsReadOnly
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get => false;
-        }
+        public int Count => _count;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public bool IsReadOnly => false;
+
         public void Add(T item)
         {
             var count = _count;
@@ -49,7 +36,6 @@ namespace Selene.Collections
             _count = count + 1;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Remove(T item)
         {
             var index = IndexOf(item);
@@ -102,7 +88,6 @@ namespace Selene.Collections
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private void ReorderItems(
             int leadingCount, 
             int trailingSourceIndex, 
