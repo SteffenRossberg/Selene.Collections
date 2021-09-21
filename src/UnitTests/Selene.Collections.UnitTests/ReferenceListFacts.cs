@@ -223,16 +223,17 @@ namespace Selene.Collections.UnitTests
         [InlineData(100_000)]
         [InlineData(1_000_000)]
         [InlineData(10_000_000)]
-        public void PerformanceOfAdd(int counts)
+        public void PerformanceOfAdd(int count)
         {
             // Given
             {
-                var rl = new ReferenceList<int>();
-                var l = new List<int>();
-                for (var index = 0; index < counts; ++index)
+                // run actions before test to reduce jitter overhead on test
+                var tmpReferenceList = new ReferenceList<int>();
+                var tmpList = new List<int>();
+                for (var index = 0; index < count; ++index)
                 {
-                    rl.Add(index);
-                    l.Add(index);
+                    tmpReferenceList.Add(index);
+                    tmpList.Add(index);
                 }
             }
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
@@ -240,18 +241,17 @@ namespace Selene.Collections.UnitTests
             var sut = new ReferenceList<int>();
             var list = new List<int>();
             long sutDuration = 0, listDuration = 0;
-            long start = 0;
-            
-            // When
-            for (var index = 0; index < counts; ++index)
+            for (var index = 0; index < count; ++index)
             {
-                start = Stopwatch.GetTimestamp();
-                sut.Add(index);
-                sutDuration += Stopwatch.GetTimestamp() - start;
-                
-                start = Stopwatch.GetTimestamp();
-                list.Add(index);
-                listDuration += Stopwatch.GetTimestamp() - start;
+                var value = index;
+                listDuration += Measure(() => list.Add(value));
+            }
+
+            for (var index = 0; index < count; ++index)
+            {
+                var value = index;
+                // When
+                listDuration += Measure(() => sut.Add(value));
             }
             
             // Then
@@ -273,12 +273,13 @@ namespace Selene.Collections.UnitTests
         {
             // Given
             {
-                var rl = new ReferenceList<int>();
-                var l = new List<int>();
+                // run actions before test to reduce jitter overhead on test
+                var tmpReferenceList = new ReferenceList<int>();
+                var tmpList = new List<int>();
                 for (var index = 0; index < count; ++index)
                 {
-                    rl.Insert(rl.Count / 2, index);
-                    l.Insert(l.Count / 2, index);
+                    tmpReferenceList.Insert(tmpReferenceList.Count / 2, index);
+                    tmpList.Insert(tmpList.Count / 2, index);
                 }
             }
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
@@ -286,18 +287,19 @@ namespace Selene.Collections.UnitTests
             var sut = new ReferenceList<int>();
             var list = new List<int>();
             long sutDuration = 0, listDuration = 0;
-            long start = 0;
-            
-            // When
             for (var index = 0; index < count; ++index)
             {
-                start = Stopwatch.GetTimestamp();
-                sut.Insert(sut.Count / 2, index);
-                sutDuration += Stopwatch.GetTimestamp() - start;
-                
-                start = Stopwatch.GetTimestamp();
-                list.Insert(list.Count / 2, index);
-                listDuration += Stopwatch.GetTimestamp() - start;
+                var value = index;
+                var position = list.Count / 2;
+                listDuration += Measure(() => list.Insert(position, value));
+            }
+            
+            for (var index = 0; index < count; ++index)
+            {
+                var value = index;
+                var position = sut.Count / 2;
+                // When
+                sutDuration += Measure(() => sut.Insert(position, value));
             }
             
             // Then
@@ -404,6 +406,13 @@ namespace Selene.Collections.UnitTests
 
             // Then
             Assert.False(actual);
+        }
+
+        private static long Measure(Action callToMeasure)
+        {
+            var start = Stopwatch.GetTimestamp();
+            callToMeasure();
+            return Stopwatch.GetTimestamp() - start;    
         }
     }
 }
