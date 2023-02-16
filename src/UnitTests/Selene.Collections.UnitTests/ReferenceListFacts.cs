@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Selene.Collections.UnitTests
 {
